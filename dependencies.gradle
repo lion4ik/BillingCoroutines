@@ -1,0 +1,52 @@
+ext {
+    compileSdkVersion = 28
+    minSdkVersion = 15
+    targetSdkVersion = 28
+    billingCoroutinesVersion = "0.1.0"
+    billingCoroutinesVersionCode = 1
+
+    versions = [
+            kotlin : '1.3.10',
+            coroutines : '1.0.0',
+            googlePlayBillingApi : '1.2',
+
+            mockito                  : '2.21.0', // https://mvnrepository.com/artifact/org.mockito/mockito-core
+            mockitoKotlin            : '2.0.0-RC3', // https://github.com/nhaarman/mockito-kotlin/releases
+
+            //Plugins
+            gradlePlugin : '3.2.1',
+            bintrayRelease: '0.8.0',
+
+            junit : '4.12',
+    ]
+
+    classpathes = [
+            gradle    : "com.android.tools.build:gradle:$versions.gradlePlugin",
+            kotlin    : "org.jetbrains.kotlin:kotlin-gradle-plugin:$versions.kotlin",
+            bintray   : "com.novoda:bintray-release:$versions.bintrayRelease"
+    ]
+
+    libs = [
+            //Kotlin
+            kotlinStdLib : "org.jetbrains.kotlin:kotlin-stdlib:$versions.kotlin",
+            coroutines : "org.jetbrains.kotlinx:kotlinx-coroutines-android:$versions.coroutines",
+
+            //Billing API
+            googlePlayBillingApi : "com.android.billingclient:billing:$versions.googlePlayBillingApi"
+    ]
+
+    def testLibs = [
+            junit                    : "junit:junit:$versions.junit",
+            mockito                  : "org.mockito:mockito-inline:$versions.mockito",
+            mockitoKotlin            : "com.nhaarman.mockitokotlin2:mockito-kotlin:$versions.mockitoKotlin",
+    ]
+
+    def impl = "implementation"
+    def testImpl = "testImplementation"
+
+    billingDependencies = [
+            [configuration: impl, dependency: libs.kotlinStdLib],
+            [configuration: impl, dependency: libs.coroutines],
+            [configuration: impl, dependency: libs.googlePlayBillingApi],
+    ]
+}

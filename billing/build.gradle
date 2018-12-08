@@ -1,0 +1,29 @@
+apply from: "../publish.gradle"
+apply plugin: 'com.android.library'
+apply plugin: 'kotlin-android'
+
+
+android {
+    compileSdkVersion rootProject.ext.compileSdkVersion
+
+    defaultConfig {
+        minSdkVersion rootProject.ext.minSdkVersion
+        targetSdkVersion rootProject.ext.targetSdkVersion
+        versionCode rootProject.ext.billingCoroutinesVersionCode
+        versionName rootProject.ext.billingCoroutinesVersion
+    }
+
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+        }
+    }
+
+}
+
+dependencies {
+    rootProject.ext.billingDependencies.each {
+        add(it.configuration, it.dependency, it.options)
+    }
+}

@@ -1,0 +1,26 @@
+buildscript {
+    repositories {
+        jcenter()
+        google()
+
+    }
+    dependencies {
+        apply from: 'dependencies.gradle'
+        classpathes = rootProject.ext.classpathes
+
+        classpathes.each { name, value ->
+            classpath value
+        }
+    }
+}
+
+allprojects {
+    repositories {
+        google()
+        jcenter()
+    }
+}
+
+task clean(type: Delete) {
+    delete rootProject.buildDir
+}
