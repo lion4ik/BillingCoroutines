@@ -50,3 +50,7 @@ class SampleFragment: Fragment, CoroutineScope {
 ```
 
 For instantiation BillingManager I would recommend to use any DI frameworks like Dagger2, Toothpick or something else.
+
+#### Important note
+
+Don't forget to call `BillingManager.destroy()` when you done your interaction with Billing.
