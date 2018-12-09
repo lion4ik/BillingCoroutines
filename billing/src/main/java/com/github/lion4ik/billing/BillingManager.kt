@@ -2,21 +2,13 @@ package com.github.lion4ik.billing
 
 import android.app.Activity
 import android.content.Context
-import com.android.billingclient.api.BillingClient
-import com.android.billingclient.api.BillingClientStateListener
-import com.android.billingclient.api.BillingFlowParams
-import com.android.billingclient.api.Purchase
-import com.android.billingclient.api.PurchasesUpdatedListener
-import com.android.billingclient.api.SkuDetails
-import com.android.billingclient.api.SkuDetailsParams
-import com.github.lion4ik.billing.error.BillingException
+import com.android.billingclient.api.*
 import com.github.lion4ik.billing.error.BillingExceptionFactory
-import kotlinx.coroutines.ExperimentalCoroutinesApi
+import com.github.lion4ik.billing.error.BillingServiceDisconnectedException
 import kotlinx.coroutines.*
 import kotlinx.coroutines.channels.ConflatedBroadcastChannel
 import kotlinx.coroutines.channels.ReceiveChannel
-import kotlinx.coroutines.launch
-import java.util.ArrayList
+import java.util.*
 import kotlin.coroutines.CoroutineContext
 import kotlin.coroutines.resume
 import kotlin.coroutines.resumeWithException
@@ -51,7 +43,7 @@ class BillingManager(private val appContext: Context) : PurchasesUpdatedListener
     private suspend fun connectService() = suspendCoroutine<Int> { continuation ->
         billingClient.startConnection(object : BillingClientStateListener {
             override fun onBillingServiceDisconnected() {
-                continuation.resumeWithException(BillingException(BillingClient.BillingResponse.SERVICE_DISCONNECTED))
+                continuation.resumeWithException(BillingServiceDisconnectedException())
             }
 
             override fun onBillingSetupFinished(responseCode: Int) {
@@ -91,14 +83,16 @@ class BillingManager(private val appContext: Context) : PurchasesUpdatedListener
         return purchaseResult.purchasesList
     }
 
-    suspend fun querySkuDetailsAsync(@BillingClient.SkuType itemType: String,
-                                     skuList: List<String>): List<SkuDetails> {
+    suspend fun querySkuDetailsAsync(
+        @BillingClient.SkuType itemType: String,
+        skuList: List<String>
+    ): List<SkuDetails> {
         connectServiceIfNeed()
         val params = SkuDetailsParams
-                .newBuilder()
-                .setType(itemType)
-                .setSkusList(skuList)
-                .build()
+            .newBuilder()
+            .setType(itemType)
+            .setSkusList(skuList)
+            .build()
 
         return suspendCoroutine { continuation ->
             billingClient.querySkuDetailsAsync(params) { responseCode, skuDetailsList ->
@@ -111,14 +105,16 @@ class BillingManager(private val appContext: Context) : PurchasesUpdatedListener
         }
     }
 
-    suspend fun launchPurchaseFlow(activity: Activity, skuId: String, oldSkus: ArrayList<String>?,
-                                   @BillingClient.SkuType billingType: String) {
+    suspend fun launchPurchaseFlow(
+        activity: Activity, skuId: String, oldSkus: ArrayList<String>?,
+        @BillingClient.SkuType billingType: String
+    ) {
         connectServiceIfNeed()
         val purchaseParams = BillingFlowParams.newBuilder()
-                .setSku(skuId)
-                .setType(billingType)
-                .setOldSkus(oldSkus)
-                .build()
+            .setSku(skuId)
+            .setType(billingType)
+            .setOldSkus(oldSkus)
+            .build()
         val responseCode = billingClient.launchBillingFlow(activity, purchaseParams)
         if (responseCode != BillingClient.BillingResponse.OK) {
             throw BillingExceptionFactory.createException(responseCode)
@@ -128,9 +124,9 @@ class BillingManager(private val appContext: Context) : PurchasesUpdatedListener
     suspend fun launchPurchaseFlow(activity: Activity, skuDetails: SkuDetails, oldSku: String?) {
         connectServiceIfNeed()
         val purchaseParams = BillingFlowParams.newBuilder()
-                .setSkuDetails(skuDetails)
-                .setOldSku(oldSku)
-                .build()
+            .setSkuDetails(skuDetails)
+            .setOldSku(oldSku)
+            .build()
         val responseCode = billingClient.launchBillingFlow(activity, purchaseParams)
         if (responseCode != BillingClient.BillingResponse.OK) {
             throw BillingExceptionFactory.createException(responseCode)

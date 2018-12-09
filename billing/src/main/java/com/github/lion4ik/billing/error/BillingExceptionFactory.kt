@@ -15,8 +15,8 @@ object BillingExceptionFactory {
         BillingResponse.ITEM_NOT_OWNED -> ItemNotOwnedException()
         BillingResponse.ITEM_UNAVAILABLE -> ItemUnavailableException()
         BillingResponse.USER_CANCELED -> UserCanceledException()
-        BillingResponse.SERVICE_DISCONNECTED -> ServiceDisconnectedException()
+        BillingResponse.SERVICE_DISCONNECTED -> BillingServiceDisconnectedException()
         BillingResponse.SERVICE_UNAVAILABLE -> ServiceUnavailableException()
-        else -> BillingException(errorCode)
+        else -> BillingOk()
     }
 }
